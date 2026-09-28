@@ -1,0 +1,113 @@
+{
+  "reviewed_at": "2026-09-28",
+  "sources": [
+    {
+      "source": "~/.claude/skills/talking-head-cut/SKILL.md",
+      "sha256": "e4f4dc6236b57fe33ce2e0b1589fed35831810a21cde5767d679c6c96920896a",
+      "use": "editing, packaging, audio and geometry methods",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/talking-head-cut/scripts/tighten_pauses.py",
+      "sha256": "00b6bd47d92c3d8054bef8f74be8f39a6b189ed6828f750c180430815aa909cf",
+      "use": "pause proposal and EDL remapping adapted into edit.py",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/talking-head-cut/scripts/words.py",
+      "sha256": "10950e22f8dc9c2d55a6ec002b024efe8c777f5cb5e4fca3c0f0d68f0d39339f",
+      "use": "portable word transcription adapted into transcribe.py",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/talking-head-cut/scripts/audio_clean.sh",
+      "sha256": "ff1b566748d462c1f3feaef224faaf907b291f9764ef87132a07917f5a6ff4c0",
+      "use": "conservative audio filter rationale",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/talking-head-recut/SKILL.md",
+      "sha256": "0e7675d8b9b5cf7f92e893b527a3380f4bb3b8d6c836cd9fa38c5e9ae2e96fae",
+      "use": "graphic packaging route; upstream optional",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.agents/skills/embedded-captions/SKILL.md",
+      "sha256": "a966ebd548e618f410a18b3479934ea45c610c2c1ede230fdb927d9b1fd5a0f5",
+      "use": "readable captions and timing constraints",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/mmm-video/video-subtitle-design/SKILL.md",
+      "sha256": "00823d33431988a4bdaa385c73f4d032bcc6d784af55405d08040aa9f1e8e26d",
+      "use": "semantic grouping and mobile readability",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/mmm-video/video-understanding/SKILL.md",
+      "sha256": "10a484aa32159e4db2150d62db653aae48d317b987b7e0b178deb129b04e66fc",
+      "use": "reference inspection and media selection",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/mmm-video/video-hook-writer/SKILL.md",
+      "sha256": "b031f4884e22cd360b02c4fde9ffcd0e4427b14f072ca753d84ba861d3dea62b",
+      "use": "opening judgment source; account-specific branches not copied",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/mmm-video/tiktok-description-writer/SKILL.md",
+      "sha256": "c302b420aff2fd5c30ced16ecc6353dc780454b20b58026577f2d9b7cf374414",
+      "use": "post-copy source; unsupported causal/account claims excluded",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/mmm-video/tiktok-hashtag-writer/SKILL.md",
+      "sha256": "95d02c1f14a7d8ce4edb3fdab7eea9fa2be8726f2ad47576a015f488ad0142a4",
+      "use": "post-copy source; account-specific tag rules excluded",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/video-finalize-deliver/SKILL.md",
+      "sha256": "a1cd5fe2eba294210ccfce3523f6f4b9da5de7f99a0f1c8aa4e99f0110880a1e",
+      "use": "delivery states and synchronized media lineage",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/scene-asset-composer/SKILL.md",
+      "sha256": "588591580482a51373b28b840f2ae77a4f7a4526a16b59d9c3f33ded933fb9ae",
+      "use": "asset provenance and image inspection",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.claude/skills/scene-asset-composer/legacy-non-tech.md",
+      "sha256": "6d505f9d583c0d4e6087f29d2008a4f00476926574cc433c4a7c1f0249a91ac5",
+      "use": "PT-adapted scene fit and reference roles",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/Obsidian/Personal vault/4 Insights/视频判断总原则.md",
+      "sha256": "4cf251475479242d7cc5794a1e5c6dab0ad2cc3a20050cf9c4233997b6cdba95",
+      "use": "cross-format judgment source",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/Obsidian/Personal vault/4 Insights/Talking Head 评分标准.md",
+      "sha256": "e0eed5dbdd2253481a2c0dd6bf4e4dc3f369105ba7d98d6eb896fb614733f110",
+      "use": "PT-adapted judgment and safe-zone experience",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/Developer/PTAI/PT Dev/PT-Workspace-Pack/docs/ONBOARDING.md",
+      "sha256": "1c75131647f39fd324be24432c24190283756dd83b0f41bb1e095a30b3944d15",
+      "use": "connect setup adaptation",
+      "mode": "adapted method; not wholesale copy"
+    },
+    {
+      "source": "~/.agents/skills/hyperframes/SKILL.md",
+      "sha256": "49e0854d6142edb8b067c56bdedb711eca4fb828e944918b5a3f8422b74ec7ad",
+      "use": "optional advanced JS workflow discovery",
+      "mode": "adapted method; not wholesale copy"
+    }
+  ]
+}

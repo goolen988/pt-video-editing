@@ -1,0 +1,11 @@
+# Captions and JavaScript graphics
+
+Use the actual edited speech, not an imagined improved script. Correct uncertain transcription before rendering. Group by semantic phrases, punctuation and pauses; use the generated SRT/ASS as a starting point. For custom grouping supply `caption_groups: [{start,end,text}]` in output seconds. A caption cannot change the speaker's claim. Avoid adding a second subtitle system over burned-in captions.
+
+Start with a conservative vertical preset: content within x=15–85%, y=20–76%. This derives from previous mobile-player experience, not a permanent platform specification. Check the current target player's visible UI and the particular crop. Adjust the profile for the target aspect ratio and platform. Keep clear of eyes, mouth, exercise form, equipment and evidence. Use measured `face_boxes: [{start,end,x,y,w,h}]` in normalized OUTPUT coordinates; empty boxes mean no face-occlusion validation, not a pass. Sample moving subjects across each graphic's display interval. The renderer validates card/caption bounds and supplied face boxes; it cannot detect exercise props automatically.
+
+Plain captions use readable high-contrast text and a dark outline. Default font size scales with image height; `caption_y` locates the bottom-centre baseline. Reflow long lines, inspect glyph support, contrast and readability at phone size. Numbers/units in cards must agree with speech. A punchy title is a faithful summary, not a manufactured claim.
+
+`cards` drive `scripts/graphics.cjs`: seekable JavaScript entrance/exit animation, dynamically fitted lines, opaque readable card backing. It renders transparent PNG frames with pinned Playwright Chromium, then FFmpeg composites them onto the clean edit. Same input time gives the same frame. Timed card bounds must not overlap one another or the caption area. For more elaborate JS scenes, follow [tools.md](tools.md) and preserve the same output timebase.
+
+B-roll choice: text/numbers/simple diagrams → code; actual product/exercise/UI evidence → supplied footage or screenshot; generic environment → licensed stock; genuinely invented illustration → image generator. Never use a generated exercise demonstration as proof of correct real technique.
