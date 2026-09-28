@@ -1,30 +1,37 @@
 # PT Video Editing
 
-Bring a recording. Ask for the edit. Watch the result and tell your agent what to change.
+**A recording → a watchable edit → your feedback → the next version.**
 
-Two independently installable skillsets for a desktop agent with local file and command access:
+This folder is the maintained source for two independent skills: **PT Connect** (computer setup and saved readiness) and **PT Video Editing** (judgment, editing, packaging and revision).
 
-- **PT Connect** checks the computer, installs only the tools a task needs, and saves setup status.
-- **PT Video Editing** combines editing judgment, local execution, playable review and timestamped revisions.
+## Start here
 
-Start in your desktop agent:
+- [What this pack should deliver, and where to inspect it](ACCEPTANCE.md)
+- [Coach-facing education page](https://pt-workspace.vercel.app/editing.html)
+- [Installation guide](START.md)
+- [Source methods and adaptations](SOURCES.md)
+- [Publishing and maintenance](MAINTAINING.md)
+- [Technical verification record](VALIDATION.md)
 
-> Read https://raw.githubusercontent.com/goolen988/pt-video-editing/main/START.md and help me edit my talking-head video.
+The previous `v0.1.0-preview` established a basic renderer and distribution path. It did **not** prove that every original request works through a natural-language skill invocation. `v0.2.0-preview` adds five paired old/new task executions, actual edited videos, a skill-creator review surface, persistent Connect state and render/review regressions. It remains a review candidate with documented gaps. See ACCEPTANCE.md for the evidence state, rather than treating “published” as “accepted”.
 
-[What you can ask](https://pt-workspace.vercel.app/editing.html) · [Releases](https://github.com/goolen988/pt-video-editing/releases) · [Sources](SOURCES.md)
+## Folder map
 
-## Included
+| Location | Purpose |
+|---|---|
+| `skills/pt-connect/` | Setup skill, task-specific references and executable readiness/state helpers |
+| `skills/pt-video-editing/` | Editing skill, routed craft guidance, reusable render/review helpers |
+| `skills/*/evals/evals.json` | Natural-language tasks and measurable expectations; no private media |
+| `tests/` | Focused deterministic program regressions; these are not skill-behavior evaluation |
+| `tools/` | Allowlisted build/publish and evaluation report helpers |
+| `examples/` | How to run a demonstration; no customer footage |
 
-Word-timed edit decisions; pause suggestions; manual/agent-authored filler and repetition removal; highlight reordering; synchronized picture/audio/caption remapping; plain readable captions; JavaScript animated cards; conservative audio cleanup; optional supplied music; local before/after review with exported feedback; decode and duration checks. Reference-style and external-service work is agent-guided, not a promise of an automatic connector to every website.
+Private inputs, old-skill snapshots, executions, videos, graders and the generated skill-creator viewer live in `~/Developer/PTAI/public/Video Editing/.local/skill-evaluation/`. They are excluded from public packages. Do not put user media inside the source tree.
 
-The agent chooses semantic edits. A script cannot decide whether a hesitation is meaningful. All renders remain review candidates until the user accepts that version. No social posting is included.
+## What is included
 
-## Compatibility
+Semantic cut guidance (filler/repetition/qualifiers), pause proposals, highlight-opening selection, a shared source/output timeline, sound cleanup, captions, hook text and JavaScript card rendering, style-reference analysis, timestamped review/revision, posting copy, and task-specific music/image/service setup guidance. Scene Asset Composer is an image-planning/checking method using the generator available in the user's host.
 
-Reference environment: macOS, Python 3.9+, FFmpeg/FFprobe with libx264 (libass preferred). Optional: faster-whisper for local transcription; Node 20+ and Playwright Chromium for JavaScript graphics; yt-dlp for supported reference URLs. Linux and Windows require a fresh capability check; they have not been end-to-end qualified for this preview. No paid service is required for the core edit. First-time model/browser downloads need internet and disk space.
+Core edits need a desktop agent with local file/command access, Python and FFmpeg. Transcription and JavaScript graphics have optional local dependencies. Suno and external image services are not mandatory. A provider's account/login, a working API, and usage rights are different facts. No social publication is implied.
 
-## Maintainers
-
-This repository contains the public source snapshot. The canonical development source is `~/Developer/PTAI/dev/Video Editing/`. Changes are made there, tested, and published through `python3 tools/publish.py --publish`. The private developer tree is never uploaded. See [MAINTAINING.md](MAINTAINING.md).
-
-If FFmpeg lacks libass (common in some builds), the renderer automatically draws captions with the JavaScript/Playwright path. Install that optional dependency for burned-in captions, or render a clean cut with `captions: false` and retain SRT. Do not silently omit requested subtitles.
+Canonical source: `~/Developer/PTAI/dev/Video Editing/`. Website source: `~/Developer/PTAI/website/`. The public GitHub repository contains an allowlisted source snapshot; it never receives private Git history or evaluation footage.

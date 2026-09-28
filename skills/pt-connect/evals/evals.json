@@ -1,0 +1,21 @@
+{
+  "skill_name": "pt-connect",
+  "evals": [
+    {
+      "id": 5,
+      "name": "connect-and-resume",
+      "prompt": "我想用这台电脑剪口播，但不知道需要装什么。先检查现有工具，能用的别重装，不要替我开通付费服务。帮我做一个很短的本地测试，并保存设置，下次回来能直接继续。",
+      "expected_output": "Readiness evidence, saved host-specific setup, repeat/resume without deleting prior state; no fictional browser/provider permissions.",
+      "files": [],
+      "fixture_set": "private-local-evaluation-map",
+      "expectations": [
+        "Actually checks the authorized local project and available media tools without reinstalling present tools or opening paid accounts.",
+        "Executes a small local media smoke and retains a real output artifact.",
+        "Persists a setup record with evidence/host association rather than only writing a success message.",
+        "Re-reads/resumes the saved state without deleting evidence or repeating completed setup unnecessarily.",
+        "Separates tool presence from browser/provider authentication and does not claim unavailable permissions.",
+        "Gives a simple next task in the user’s language, without making the trainer operate command-line setup."
+      ]
+    }
+  ]
+}

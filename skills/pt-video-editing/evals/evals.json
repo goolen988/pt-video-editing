@@ -1,0 +1,70 @@
+{
+  "skill_name": "pt-video-editing",
+  "evals": [
+    {
+      "id": 1,
+      "name": "complete-talking-head",
+      "prompt": "这段口播有点拖。请去掉不必要的停顿、口头禅或重复，用里面最有吸引力的一句做开头，但别改我的意思。做成能发竖屏短视频的完整版本，配清楚的字幕和一个简短开屏标题，再给我description和hashtag。我不想学剪辑工具，直接给我看结果。",
+      "expected_output": "Complete source-to-final edit, original/candidate comparison, reasoned opening, subtitles, hook, posting copy and editable context.",
+      "files": [],
+      "fixture_set": "private-local-evaluation-map",
+      "expectations": [
+        "Produces a decodable full edited MP4 with video and audio, rather than only a script or short sample.",
+        "Retains all three substantive tips (planning, rest periods, phone distraction) and a coherent ending in the actual edited speech.",
+        "Removes or tightens at least one justified redundant/pause interval without adding unsupported speech.",
+        "Opening is an existing complete source thought, with a recorded source interval and explanation of the transition.",
+        "Renders readable captions and a short hook overlay in the actual video; layout evidence or explicit unverified limits are supplied.",
+        "Provides ready-to-copy description and relevant hashtags without invented claims or finance-persona tags.",
+        "Provides a usable review entry or before/after videos plus editable plan/transcript/receipt, preserving the source."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "reference-style",
+      "prompt": "我想把这段口播剪成参考视频的字幕和图层风格。请读这个参考URL，先用我的素材做一段12秒的样片，让我看完再决定。不要改变我讲的内容，也不要套你自己的默认配色。",
+      "expected_output": "Observed reference and a rendered 12-second adapted style sample, with evidence-based differences.",
+      "files": [],
+      "fixture_set": "private-local-evaluation-map",
+      "expectations": [
+        "Uses the retrieved Jessica reference and records actual observed timestamps/features, not the earlier local placeholder reference.",
+        "Produces a decodable adaptation sample of approximately 12 seconds with audio.",
+        "Keeps the trainer source and spoken content rather than substituting the reference creator or inventing new voiceover.",
+        "Uses observed reference typography/hierarchy/layout or motion rather than the bundled default green card without justification.",
+        "Saves executable animation/composition and the final composed video, not only a storyboard.",
+        "Shows reference/sample evidence and explains practical differences, with a route for user feedback."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "revision-and-services",
+      "prompt": "刚才这版00:00–00:03的大标题挡头发，去掉它，其余字幕、声音和顺序保持不变。给我新旧版本对比。顺便告诉我这条有没有必要用Suno配乐或Composer生图；我还没配置它们，不要付费也不要开账号。",
+      "expected_output": "Targeted new candidate preserving previous bytes and unrelated choices; concise first-use guidance and fit decision for optional services.",
+      "files": [],
+      "fixture_set": "private-local-evaluation-map",
+      "expectations": [
+        "Retains the prior candidate bytes unchanged and identifies which version/time the feedback concerns.",
+        "Produces a decodable revised MP4 in which the large opening card is removed.",
+        "Keeps the prior sequence and duration; the soundtrack and caption timing/content are retained within normal encoding tolerance.",
+        "Provides before/after playback and a concise change note with editable context.",
+        "Explains whether Suno adds value here, its official first-use/login/download path, and that it was not connected or generated in this run.",
+        "Explains Composer as the local asset-fit method, gives a concrete use/not-use judgment, and does not invent a hosted Composer API."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "filler-meaning-safety",
+      "prompt": "去掉这段里的um、uh和重复句，保留“do not”和“if it hurts, stop”这些意思，不能为了短而删掉警告。给我剪前剪后和字幕，先不用额外包装。",
+      "expected_output": "Actual filler/repetition removal with preserved negation and safety condition. This is a labeled synthetic speech fixture, not a trainer-performance test.",
+      "files": [],
+      "fixture_set": "private-local-evaluation-map",
+      "expectations": [
+        "Produces an actual shorter decodable edit and preserves an original comparison.",
+        "Removes the identified opening Um and one repeated full sentence rather than merely compressing silence.",
+        "Retains the negation in “do not need to train to failure on every set” in the actual edited speech.",
+        "Retains the safety condition and stop-exercise instruction, as well as “not to rush”.",
+        "Supplies synchronized captions and an editable cut map grounded in source intervals.",
+        "Labels the fixture synthetic and does not claim human acceptance or natural-delivery verification from decode alone."
+      ]
+    }
+  ]
+}

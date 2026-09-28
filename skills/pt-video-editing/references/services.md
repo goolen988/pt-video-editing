@@ -12,3 +12,11 @@ Composer here means the local **scene-asset-composer skill**, not a hosted servi
 
 ## Other missing tools
 Explain what is missing, the official website, the smallest manual step and what file to bring back. If a documented API is provided, inspect its current contract, authentication and cost; build the smallest task adapter and verify a real response before claiming integration. Log job IDs/status and bounded retries; never resubmit an uncertain paid job blindly. Credentials belong in secure host storage, not plan files or public packages. A single call estimated above $5 requires explicit confirmation before submission. Cloud uploads require the user's authorized scope.
+
+## First-use handoff, in the user's terms
+
+Explain the gain before setup: “An instrumental can give this intro some energy; the voice stays in front. We can also finish without it.” If the user wants Suno, open its official site in an authorized browser, let them complete sign-in, and inspect the current account/download entitlement. Prepare a concrete short music brief; don't make the trainer learn prompts. Audition the result, download via Library/Workspace → track menu → Download where available, and compare a brief mixed excerpt with the dry voice. The official help pages above were rechecked on 2026-09-28; UI and terms should still be verified at use time.
+
+If the account is not available, deliver the clean edit now plus one specific next step and prepared brief. Label it “music not generated”; no placeholder sound, account assumption or fabricated job receipt. Composer follows the same pattern: explain the image's purpose, prepare/reference/check it, and use a real generated/supplied file only when the capability is available.
+
+For a user-supplied API, record base URL, documented endpoint/method/schema, credential location, cost and idempotency/status behavior. Check the contract, make the authorized request, inspect the response, retrieve and verify the actual media, then compose a sample. A successful HTTP status without an asset is not completion. If a network sandbox blocks a harmless authorized request, use the host's normal network-permission route before declaring the vendor unavailable. Never disable authentication or spend controls.

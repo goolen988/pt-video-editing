@@ -1,4 +1,25 @@
-# Validation — 0.1.0-preview
+# Validation — 0.2.0-preview review candidate
+
+This version is a skill-creator rework, not a claim of trainer acceptance. Behavioral results and requirement-by-requirement evidence are recorded in ACCEPTANCE.md.
+
+## Checks in this rework
+
+- The maintained runtime files match the evaluated snapshots byte-for-byte (4 Connect files and 18 Editing files; source-only eval specs excluded).
+- Both skills passed the invoked skill-creator `quick_validate.py`.
+- **16/16 automated regression checks passed**, including the actual Playwright/Chromium media test (`PT_VIDEO_EDITING_BROWSER_TEST=1`). Coverage includes host-bound setup state and resume, real A/V render, failed-render cleanup/retry, partial-word and frame-grid mapping, face/safe bounds, actual overlay pixels, version/source-bound comments and feedback export.
+- Both preview ZIPs built and installed in separate clean project directories. The newly installed editing ZIP also passed all five real media/browser regression tests from its installed location. The package builder excludes evaluation recordings, local states and private history.
+- The exact skill-creator `generate_review.py` produced the evaluation viewer. The thin wrapper preserves its Outputs/Benchmark/feedback UI, adds inline MP4 playback, loads task metadata from nested run directories, safely embeds HTML outputs and makes static comment persistence/download reliable. An actual Chromium check confirmed MP4 playback, feedback surviving reload, and a ten-result feedback JSON download without page errors. Automated feedback is a test fixture, not user acceptance.
+- The education page returned HTTP 200 at its existing public URL on 2026-09-28. This rework does not replace its prior browser evidence below with a claim of a new design test.
+
+## Evaluation boundaries
+
+Five realistic tasks each have one revised and one frozen-old-skill execution. The executor is independent Codex agents. An actual Claude Code probe returned weekly-limit HTTP 429, so this is **not Claude behavioral validation**. Explicitly supplying a skill does not measure automatic trigger accuracy. Source speech, reference media and all rendered cases remain private local fixtures.
+
+Reported wall-clock includes host/queue interruption and cannot establish speed improvement. Token telemetry is unavailable and is not estimated. A renderer callback correction occurred during the first round and was logged. One old-version executor made a limited memory registry lookup before isolation was reinforced. This is a practical small-sample comparison, not a controlled claim of general superiority.
+
+Human full listening, natural delivery and aesthetic acceptance remain pending. Suno account operation, paid image generation and arbitrary supplied-provider APIs are conditional routes, not verified universal connectors. The provided guidance explains setup and available alternatives; no such paid service was used during this rework. Platform margins are editable layout assumptions, not a universal guarantee about changing app UI.
+
+# Historical validation — 0.1.0-preview
 
 Validated on macOS with Python 3.9, FFmpeg 8.1/libx264, Node 25 and Playwright 1.58.2 Chromium on 2026-09-28.
 

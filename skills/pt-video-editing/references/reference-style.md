@@ -12,3 +12,7 @@ Probe duration/aspect/fps; inspect the beginning, middle, ending and transitions
 Then map each useful element to the user's available footage. State what can be reproduced and what needs extra material. Preserve the user's words/identity; do not download the reference's soundtrack and assume it is cleared. Render a representative 8–15 second sample, show it, then apply feedback to the full cut. If the source contains burned-in text or incompatible framing, explain the practical limit and show the closest workable treatment.
 
 For extraction, use `ffmpeg -ss <seconds> -i <reference> -frames:v 1 <frame.png>` and a short audio/video excerpt. These are analysis evidence, not proof of full playback. Save observed facts separately from inferred style choices.
+
+## Deliver the interpretation alongside the clip
+
+Use a compact table: reference timestamp / observed feature / proposed adaptation / output timestamp / difference or limitation. Separate generic style (layout, hierarchy, motion, cut rhythm) from the other creator's specific expression. If the reference's entire look depends on supplied footage you do not have, state it before spending on a complete imitation. Use an actual downloaded reference file, not its transcript alone. A 12-second sample is enough to approve style, but does not satisfy a request to finish a whole video.

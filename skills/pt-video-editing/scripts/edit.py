@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Portable EDL renderer. All semantic decisions belong to the agent and user."""
-import argparse, hashlib, json, math, os, subprocess, sys
+import argparse, hashlib, json, math, os, shutil, subprocess, sys, tempfile, unicodedata
 from pathlib import Path
 
 def run(args, capture=False):
@@ -23,21 +23,27 @@ def words_load(p):
     words=read(p); prev=-1
     require(isinstance(words,list),'words must be an array')
     for w in words:
-        require(isinstance(w.get('w'),str) and number(w.get('s')) and number(w.get('e')) and 0<=w['s']<w['e'],'invalid word')
+        require(isinstance(w,dict) and isinstance(w.get('w'),str) and w['w'].strip() and number(w.get('s')) and number(w.get('e')) and 0<=w['s']<w['e'],'invalid word')
         require(w['s']>=prev,'words not ordered');prev=w['s']
     return words
 
 def timeline(segments, words, dur, fps=None):
-    require(bool(segments),'empty edit')
+    require(isinstance(segments,list) and bool(segments),'segments must be a non-empty array')
     mapped=[]; spans=[]; offset=0
     for seg in segments:
+        require(isinstance(seg,dict),'segment must be an object')
+        require('start' in seg and 'end' in seg,'segment needs start and end')
         a,b=seg['start'],seg['end']
         require(number(a) and number(b) and 0<=a<b<=dur+0.001,'segment outside source')
         for w in words:
             for boundary in (a,b):
                 require(not w['s']+0.015<boundary<w['e']-0.015,'cut crosses word '+w['w'])
-            if w['s']>=a-0.015 and w['e']<=b+0.015:
-                mapped.append({'w':w['w'],'s':round(offset+max(0,w['s']-a),6),'e':round(offset+min(b-a,w['e']-a),6)})
+            # A word can be within the 15 ms edge tolerance while lying wholly
+            # outside this segment. Keep only real intersections so rounding
+            # never creates a zero-length caption at a cut.
+            clipped_start=max(w['s'],a);clipped_end=min(w['e'],b)
+            if clipped_start<clipped_end:
+                mapped.append({'w':w['w'],'s':round(offset+clipped_start-a,6),'e':round(offset+clipped_end-a,6)})
         frames=max(1,math.ceil((b-a)*fps-1e-8)) if fps else None
         length=frames/fps if fps else b-a
         spans.append({'source_start':a,'source_end':b,'output_start':offset,'output_end':offset+length,'frames':frames,'tail_hold':length-(b-a),'reason':seg.get('reason','')})
@@ -75,6 +81,7 @@ def layout(plan,groups,total):
         boxes.append((g,[sx,y-0.07,sw,0.07]))
     for face in faces:
         require(all(number(face.get(k)) for k in ['start','end','x','y','w','h']),'invalid face box')
+        require(0<=face['start']<face['end']<=total and 0<=face['x']<1 and 0<=face['y']<1 and face['w']>0 and face['h']>0 and face['x']+face['w']<=1 and face['y']+face['h']<=1,'face box outside frame or edit')
     for item,box in boxes:
         x,yy,w,h=box
         require(x>=sx-1e-6 and yy>=sy-1e-6 and x+w<=sx+sw+1e-6 and yy+h<=sy+sh+1e-6,'text/card outside safe rect')
@@ -87,6 +94,28 @@ def stamp(t,ass=False):
     units=int(round(t*(100 if ass else 1000))); scale=100 if ass else 1000
     sec,frac=divmod(units,scale);m,s=divmod(sec,60);h,m=divmod(m,60)
     return f'{h}:{m:02}:{s:02}.{frac:02}' if ass else f'{h:02}:{m:02}:{s:02},{frac:03}'
+
+def caption_font_size(text,width,max_size,safe_width):
+    # Conservatively budget CJK/full-width glyphs as one em and Latin glyphs
+    # by a typical Arial width. ASS does not expose glyph metrics to Python.
+    units=0.0
+    for char in text:
+        east=unicodedata.east_asian_width(char)
+        if east in ('W','F'):
+            units+=1.0
+        elif char.isspace():
+            units+=0.34
+        elif char in "ilI.,'`:;!|()[]{}":
+            units+=0.34
+        elif char.isupper():
+            units+=0.68
+        else:
+            units+=0.58
+    require(units>0,'caption text is empty')
+    size=min(max_size,int(safe_width*width*.88/units))
+    require(size>=8,'caption cannot fit inside safe margins; shorten the caption')
+    return size
+
 def captions(out,groups,width,height,plan):
     srt='\n\n'.join(f"{i+1}\n{stamp(g['start'])} --> {stamp(g['end'])}\n{g['text']}" for i,g in enumerate(groups))
     (out/'captions.srt').write_text(srt+'\n')
@@ -106,15 +135,15 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     lines=[]
     for g in groups:
         text=g['text'].replace('\\','/').replace('{','(').replace('}',')')
-        # Fit conservatively by character count; phone-size visual review remains required.
-        size=min(fs, max(8,int(width*.65/max(len(text),1)/.68)))
+        size=caption_font_size(text,width,fs,plan.get('safe_rect',[.15,.2,.70,.56])[2])
         lines.append(f"Dialogue: 0,{stamp(g['start'],True)},{stamp(g['end'],True)},Default,,0,0,0,,{{\\pos({width//2},{y})\\fs{size}}}{text}")
     (out/'captions.ass').write_text(header+'\n'.join(lines)+'\n')
 
-def render(planpath,outpath):
-    pp=Path(planpath).resolve();plan=read(pp);base=pp.parent;out=Path(outpath).resolve()
-    require(not out.exists(),'output exists; choose a new revision directory')
+def _render_into(planpath,final_outpath,workpath):
+    pp=Path(planpath).resolve();plan=read(pp);base=pp.parent;final_out=Path(final_outpath).resolve();out=Path(workpath).resolve()
+    require(isinstance(plan,dict),'edit plan must be an object')
     src=resolve(base,plan['source']);words=words_load(resolve(base,plan['words']))
+    require(src.is_file(),'source video does not exist: '+str(src))
     meta=probe(src);videos=[s for s in meta['streams'] if s['codec_type']=='video'];audios=[s for s in meta['streams'] if s['codec_type']=='audio']
     require(videos and audios,'source needs video and audio')
     dur=float(meta['format']['duration'])
@@ -123,15 +152,17 @@ def render(planpath,outpath):
     rotation=next((x.get('rotation',0) for x in videos[0].get('side_data_list',[]) if 'rotation' in x),float(videos[0].get('tags',{}).get('rotate',0)))
     if round(rotation)%180:width,height=height,width
     width+=width%2;height+=height%2
-    n,d=map(int,videos[0]['avg_frame_rate'].split('/'));fps=plan.get('fps',n/d if d else 30)
+    try:n,d=map(int,videos[0]['avg_frame_rate'].split('/'))
+    except (ValueError,AttributeError):n,d=0,0
+    fps=plan.get('fps',n/d if d else 30)
     require(number(fps) and 1<=fps<=120,'invalid output fps')
     mapped,spans,total=timeline(plan['segments'],words,dur,fps)
     groups=plan.get('caption_groups',group_words(mapped)) if plan.get('captions',True) else []
+    require(isinstance(groups,list),'caption_groups must be an array')
     layout(plan,groups,total)
-    out.mkdir(parents=True)
     saved_plan=dict(plan)
     for key in ['source','words','music']:
-        if saved_plan.get(key):saved_plan[key]=os.path.relpath(resolve(base,saved_plan[key]),out)
+        if saved_plan.get(key):saved_plan[key]=os.path.relpath(resolve(base,saved_plan[key]),final_out)
     write(out/'plan.json',saved_plan);write(out/'words.json',mapped);write(out/'timeline.json',spans)
     captions(out,groups,width,height,plan)
     graph=[]
@@ -147,7 +178,7 @@ def render(planpath,outpath):
     has_ass=' ass ' in run(['ffmpeg','-hide_banner','-filters'],True)
     js_captions=bool(groups) and not has_ass
     if plan.get('cards') or js_captions:
-        write(out/'graphics.json',{'width':width,'height':height,'fps':fps,'duration':total,'cards':plan.get('cards',[]),'captions':groups if js_captions else [],'caption_y':plan.get('caption_y',.71)})
+        write(out/'graphics.json',{'width':width,'height':height,'fps':fps,'duration':total,'cards':plan.get('cards',[]),'captions':groups if js_captions else [],'caption_y':plan.get('caption_y',.71),'safe_rect':plan.get('safe_rect',[.15,.20,.70,.56])})
         run(['node',Path(__file__).with_name('graphics.cjs'),out/'graphics.json',out/'graphics'])
         cmd+=['-framerate',str(fps),'-i','graphics/%06d.png'];fg.append(f'[{v}][{index}:v]overlay=shortest=1[vcard]');v='vcard';index+=1
     if groups and not js_captions:fg.append(f'[{v}]ass=captions.ass[vtext]');v='vtext'
@@ -161,8 +192,23 @@ def render(planpath,outpath):
     subprocess.run(cmd,cwd=out,check=True)
     actual=duration(out/'candidate.mp4');require(abs(actual-total)<.10,'duration mismatch')
     check(out/'candidate.mp4')
-    receipt={'status':'REVIEW_CANDIDATE','version':plan.get('version',out.name),'source_sha256':sha(src),'output_sha256':sha(out/'candidate.mp4'),'input_plan_sha256':sha(pp),'saved_plan_sha256':sha(out/'plan.json'),'expected_duration':total,'actual_duration':actual,'fps':fps,'face_check':'SUPPLIED_BOXES' if plan.get('face_boxes') else 'NOT_CHECKED','playback_review':'PENDING','user_acceptance':'PENDING','ffmpeg':run(['ffmpeg','-version'],True).splitlines()[0]}
-    write(out/'receipt.json',receipt);print(json.dumps(receipt))
+    receipt={'status':'REVIEW_CANDIDATE','version':plan.get('version',final_out.name),'source_sha256':sha(src),'output_sha256':sha(out/'candidate.mp4'),'input_plan_sha256':sha(pp),'saved_plan_sha256':sha(out/'plan.json'),'timeline_sha256':sha(out/'timeline.json'),'expected_duration':total,'actual_duration':actual,'fps':fps,'face_check':'SUPPLIED_BOXES' if plan.get('face_boxes') else 'NOT_CHECKED','playback_review':'PENDING','user_acceptance':'PENDING','ffmpeg':run(['ffmpeg','-version'],True).splitlines()[0]}
+    write(out/'receipt.json',receipt)
+    return receipt
+
+def render(planpath,outpath):
+    final_out=Path(outpath).resolve()
+    require(not os.path.lexists(final_out),'output exists; choose a new revision directory')
+    final_out.parent.mkdir(parents=True,exist_ok=True)
+    work=Path(tempfile.mkdtemp(prefix='.'+final_out.name+'.rendering-',dir=final_out.parent))
+    try:
+        receipt=_render_into(planpath,final_out,work)
+        # The completed directory appears only after all render and decode checks pass.
+        os.rename(work,final_out)
+        print(json.dumps(receipt))
+    except BaseException:
+        shutil.rmtree(work,ignore_errors=True)
+        raise
 
 def check(p):
     meta=probe(p);types=[s['codec_type'] for s in meta['streams']];require('video' in types and 'audio' in types,'missing audio/video')
@@ -190,4 +236,9 @@ def main():
     else:suggest(a.video,a.words,a.out)
 if __name__=='__main__':
     try:main()
-    except (ValueError,KeyError,subprocess.CalledProcessError) as e:print(str(e),file=sys.stderr);sys.exit(1)
+    except (ValueError,KeyError,subprocess.CalledProcessError) as e:
+        print(str(e),file=sys.stderr)
+        if isinstance(e,subprocess.CalledProcessError) and e.stderr:
+            detail=e.stderr.decode(errors='replace') if isinstance(e.stderr,bytes) else e.stderr
+            print(detail.rstrip(),file=sys.stderr)
+        sys.exit(1)

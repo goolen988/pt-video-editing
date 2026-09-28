@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Allowlisted reproducible archives and a public source snapshot."""
-import hashlib,json,re,shutil,zipfile
+import hashlib,json,re,shutil,zipfile,os
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-TOP=['README.md','START.md','SOURCES.md','sources.json','MAINTAINING.md','VALIDATION.md','LICENSE','THIRD_PARTY.md','VERSION','install.py']
+TOP=['ACCEPTANCE.md','README.md','START.md','SOURCES.md','sources.json','MAINTAINING.md','VALIDATION.md','LICENSE','THIRD_PARTY.md','VERSION','install.py']
 DIRS=['skills','tools','tests','examples']
 def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def files():
  result=[ROOT/n for n in TOP]
  for d in DIRS:
-  result.extend(p for p in (ROOT/d).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc')
+  result.extend(p for p in (ROOT/d).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc' and p.name!='.DS_Store')
  return sorted(result)
 def build():
  version=(ROOT/'VERSION').read_text().strip();assert re.fullmatch(r'\d+\.\d+\.\d+(?:-[a-z0-9.]+)?',version)
@@ -19,14 +19,15 @@ def build():
   text=p.read_text();assert not secret.search(text),f'Possible secret: {p}'
   # Source programs may test for absolute local paths, but no actual home path is distributable.
   assert not re.search(r'/Users/[A-Za-z0-9_-]+/',text),f'Personal path: {p}'
- out=ROOT/'.build'/version
+ default_out = ROOT.parents[1]/'public/Video Editing/.local/builds' if ROOT.parent.name == 'dev' else ROOT/'.build'
+ out=Path(os.environ.get('PT_BUILD_ROOT', str(default_out))).expanduser()/version
  if out.exists():shutil.rmtree(out)
  snapshot=out/'public';snapshot.mkdir(parents=True)
  for p in selected:
   target=snapshot/p.relative_to(ROOT);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(p,target)
  assets=[]
  for skill in ['pt-connect','pt-video-editing']:
-  archive=out/f'{skill}-{version}.zip';items=[p for p in selected if p.relative_to(ROOT).parts[:2]==('skills',skill) or p.name in ['install.py','VERSION','SOURCES.md','sources.json','LICENSE','THIRD_PARTY.md'] and p.parent==ROOT]
+  archive=out/f'{skill}-{version}.zip';items=[p for p in selected if (p.relative_to(ROOT).parts[:2]==('skills',skill) and 'evals' not in p.relative_to(ROOT).parts) or p.name in ['install.py','VERSION','SOURCES.md','sources.json','LICENSE','THIRD_PARTY.md'] and p.parent==ROOT]
   with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
    for p in items:
     name=str(Path(f'{skill}-{version}')/p.relative_to(ROOT));info=zipfile.ZipInfo(name,(2026,9,28,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16;z.writestr(info,p.read_bytes())
