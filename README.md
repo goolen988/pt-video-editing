@@ -25,6 +25,6 @@ Reference environment: macOS, Python 3.9+, FFmpeg/FFprobe with libx264 (libass p
 
 ## Maintainers
 
-This repository contains the public source snapshot. The canonical development source is `~/Developer/PTAI/PT Dev/editing-kit/`. Changes are made there, tested, and published through `python3 tools/publish.py --publish`. The private developer tree is never uploaded. See [MAINTAINING.md](MAINTAINING.md).
+This repository contains the public source snapshot. The canonical development source is `~/Developer/PTAI/dev/Video Editing/`. Changes are made there, tested, and published through `python3 tools/publish.py --publish`. The private developer tree is never uploaded. See [MAINTAINING.md](MAINTAINING.md).
 
 If FFmpeg lacks libass (common in some builds), the renderer automatically draws captions with the JavaScript/Playwright path. Install that optional dependency for burned-in captions, or render a clean cut with `captions: false` and retain SRT. Do not silently omit requested subtitles.

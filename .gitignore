@@ -1,0 +1,6 @@
+.local/
+__pycache__/
+.pytest_cache/
+.build/
+.validation/
+.DS_Store
